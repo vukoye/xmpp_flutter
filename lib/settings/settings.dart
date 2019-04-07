@@ -7,13 +7,13 @@ abstract class Settings {
 
   static const String shouldSaveAccount = "shouldSaveAccount";
   static const String isAccountSaved = "isAccountSaved";
-  static const String shouldAutoLogin = "shouldAutoLogin";
   static const String wasExtended = "wasShort";
   static const String username = "username";
   static const String password = "password";
   static const String domain = "domain";
   static const String port = "port";
   static const String rememberMe = "rememberMe";
+  static const String wasLoggedIn = "wasLoggedIn";
 
   setAccount(xmpp.XmppAccount account);
   xmpp.XmppAccount getAccount();
@@ -80,22 +80,24 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  setAccount(xmpp.XmppAccount account) async {
+  setAccount(xmpp.XmppAccount account)  {
     if (account != null) {
       _account = account;
-      if (await getBool(Settings.shouldSaveAccount) == true) {
-        _prefs.setString(Settings.username);
-        _prefs.setString(Settings.password);
-        _prefs.setString(Settings.domain);
-        _prefs.setInt(Settings.port);
-        _prefs.setBool(Settings.isAccountSaved);
+      if (getBool(Settings.rememberMe) == true) {
+        _prefs.setString(Settings.username, account.username);
+        _prefs.setString(Settings.password, account.password);
+        _prefs.setString(Settings.domain, account.domain);
+        _prefs.setInt(Settings.port, account.port);
+        _prefs.setBool(Settings.isAccountSaved, true);
       }
     }
   }
 
   @override
   bool getBool(String setting) {
-    return _prefs.getBool(setting);
+    var result = _prefs.getBool(setting);
+    if (result == null) result = false;
+    return result;
   }
 
   @override

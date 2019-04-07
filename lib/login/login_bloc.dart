@@ -19,11 +19,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   LoginBloc({@required this.accountBloc}) {
     _initData();
-    accountBloc.state.listen((state) {
-      print("state $state");
-//      if (state is AccountUnregistered) {
-//        dispatch(LoginFailureEvent(message: state.message));
-//      }
+    accountBloc.state.listen((accountState) {
+      if (accountState is AccountUnregistered) {
+        dispatch(LoginFailureEvent(message: accountState.message));
+      }
+      print("state $accountState");
     });
   }
 
@@ -35,33 +35,47 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoginButtonPressed) {
+      String username;
+      String password;
+      String domain;
+      int port;
       if (_extended) {
-        accountBloc.dispatch(Login(
-            username: event.username,
-            password: event.password,
-            domain: event.domain,
-            port: event.port));
+        username = event.username;
+        password = event.password;
+        domain = event.domain;
+        port = event.port;
       } else {
         var jid = Jid.fromFullJid(event.username);
-        accountBloc.dispatch(Login(
-            username: jid.local,
-            password: event.password,
-            domain: jid.domain,
-            port: _settings.getDefaultPort()));
+        username = jid.local;
+        password = event.password;
+        domain = jid.domain;
+        port = _settings.getDefaultPort();
       }
+      if (_rememberMe) {
+        _settings.setString(Settings.username, username);
+        _settings.setString(Settings.domain, domain);
+        _settings.setString(Settings.password, password);
+        _settings.setInt(Settings.port, port);
+      }
+      accountBloc.dispatch(Login(
+          username: username,
+          password: password,
+          domain: domain,
+          port: port));
       yield LoginLoading();
     } else if (event is ExtendPressed) {
       _extended = !_extended;
       _settings.setBool(Settings.wasExtended, _extended);
-      yield CheckedChanged(loginExtendValue: _extended, rememberMeValue: _rememberMe);
+      yield LoginExtendedChanged(loginExtendValue: _extended);
     } else if (event is RememberMePressed) {
       _settings.setBool(Settings.rememberMe, event.rememberMeValue);
       _rememberMe = event.rememberMeValue;
       if (!event.rememberMeValue) {
         accountBloc.dispatch(ForgetMe());
       }
-      yield CheckedChanged(loginExtendValue: _extended, rememberMeValue: _rememberMe);
+      yield RememberMeChanged(rememberMeValue: _rememberMe);
     } else if (event is LoginDataLoadedEvent) {
+      _rememberMe = event.rememberMe;
       yield LoginDataLoaded(
           username: event.username,
           password: event.password,
@@ -80,6 +94,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         var password = _settings.getString(Settings.password);
         var domain = _settings.getString(Settings.domain);
         var port = _settings.getInt(Settings.port);
+        if (port == null) port = _settings.getDefaultPort();
         var wasExtended = _settings.getBool(Settings.wasExtended);
         _extended = wasExtended;
         if (wasExtended == null) wasExtended = false;
@@ -89,7 +104,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             domain: domain,
             port: port,
             wasExtended: wasExtended,
-          rememberMe: true
+            rememberMe: _settings.getBool(Settings.rememberMe) == true
         ));
       } else {
         dispatch(LoginDataLoadedEvent(
@@ -102,6 +117,5 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         ));
       }
     });
-
   }
 }

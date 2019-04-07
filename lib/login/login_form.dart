@@ -21,6 +21,12 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _domainFilter = new TextEditingController();
   final TextEditingController _portFilter = new TextEditingController();
 
+  bool _rememberMe = false;
+
+  String _authMessage;
+
+  bool _isExtended = true;
+
   Widget _getLogoWidget() {
     return Text(
       'Simple Chat',
@@ -144,29 +150,29 @@ class _LoginFormState extends State<LoginForm> {
           _usernameFilter.text = state.username;
           _passwordFilter.text = state.password;
           _domainFilter.text = state.domain;
-          return _getListBasedOnState(state.wasExtended, state.rememberMe);
-        } else if (state is CheckedChanged) {
-          return _getListBasedOnState(
-              state.loginExtendValue, state.rememberMeValue);
-        } else {
+          _authMessage = null;
+          _rememberMe = state.rememberMe;
+          _isExtended = state.wasExtended;
+          return _getListBasedOnState();
+        } else if (state is RememberMeChanged) {
+          _rememberMe = state.rememberMeValue;
+          _getListBasedOnState();
+          return _getListBasedOnState();
+        } else if (state is LoginExtendedChanged) {
+          _isExtended = state.loginExtendValue;
+          return _getListBasedOnState();
+        } else if (state is LoginFailureState) {
+          _authMessage = state.error;
+          return _getListBasedOnState();
+        }
+        else {
           return _getInitialList();
         }
-
-//        if (state is Login) {
-//          _onWidgetDidBuild(() {
-//            Scaffold.of(context).showSnackBar(
-//              SnackBar(
-//                content: Text('${state.error}'),
-//                backgroundColor: Colors.red,
-//              ),
-//            );
-//          });
-//        }
       },
     );
   }
 
-  _getListBasedOnState(bool isExtended, bool rememberMe) {
+  _getListBasedOnState() {
     var children = <Widget>[
       _getLogoWidget(),
       SizedBox(height: 48.0),
@@ -175,7 +181,7 @@ class _LoginFormState extends State<LoginForm> {
       _getPasswordWidget(),
       SizedBox(height: 8.0),
     ];
-    if (isExtended) {
+    if (_isExtended) {
       children.addAll(<Widget>[
         _getDomainWidget(),
         SizedBox(height: 8.0),
@@ -184,12 +190,15 @@ class _LoginFormState extends State<LoginForm> {
       ]);
     }
     children.addAll(<Widget>[
-      _getRememberMeWidget(rememberMe),
+      _getRememberMeWidget(_rememberMe),
       SizedBox(height: 8.0),
       _getLoginButton(),
       SizedBox(height: 8.0),
-      _getExtendedButton(isExtended)
+      _getExtendedButton(_isExtended)
     ]);
+    if (_authMessage != null && _authMessage.isNotEmpty) {
+      children.add(_getAuthFailedText(_authMessage));
+    }
     return ListView(
         shrinkWrap: true,
         padding: EdgeInsets.only(left: 24.0, right: 24.0),
@@ -197,7 +206,16 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   _getInitialList() {
-    return _getLogoWidget();
+    return ListView(
+      shrinkWrap: true,
+        padding:  EdgeInsets.only(left: 24.0, right: 24.0),
+      children: <Widget>[
+        _getLogoWidget(),
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blueGrey),
+        ),
+      ],
+    );
   }
 
   _onLoginButtonPressed() {

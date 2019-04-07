@@ -12,11 +12,19 @@ class LoginDataLoaded extends LoginState {
   int port;
   bool wasExtended;
   bool rememberMe;
+  String authMessage;
 
   @override
   String toString() => 'LoginDataLoaded';
 
-  LoginDataLoaded({this.username, this.password, this.domain, this.port,this.wasExtended, this.rememberMe});
+  LoginDataLoaded(
+      {this.username,
+      this.password,
+      this.domain,
+      this.port,
+      this.wasExtended,
+      this.rememberMe,
+      this.authMessage});
 }
 
 class LoginInitial extends LoginState {
@@ -29,11 +37,22 @@ class LoginLoading extends LoginState {
   String toString() => 'LoginLoading';
 }
 
-class CheckedChanged extends LoginState {
+class LoginExtendedChanged extends LoginState {
+  bool loginExtendValue;
+
+  LoginExtendedChanged({@required this.loginExtendValue})
+      : super([loginExtendValue]);
+
+  @override
+  String toString() => 'LoginLoading';
+}
+
+class RememberMeChanged extends LoginState {
   bool loginExtendValue;
   bool rememberMeValue;
 
-  CheckedChanged({@required this.loginExtendValue, @required this.rememberMeValue}) : super([loginExtendValue, rememberMeValue]);
+  RememberMeChanged({@required this.rememberMeValue})
+      : super([rememberMeValue]);
 
   @override
   String toString() => 'LoginLoading';

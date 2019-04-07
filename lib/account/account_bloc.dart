@@ -18,14 +18,14 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       await settings.isInitialized();
       bool shouldStartRegistration =
           settings.getBool(Settings.isAccountSaved) &&
-              await settings.getBool(Settings.shouldAutoLogin);
+               settings.getBool(Settings.wasLoggedIn);
       if (shouldStartRegistration) {
-        var account = await settings.getAccount();
+        var account =  settings.getAccount();
         if (account == null) {
           yield AccountUnregistered();
         } else {
           yield AccountRegistering();
-          yield* _registerAccount(account);
+          _registerAccount(account);
         }
       }
     } else if (event is Login) {
@@ -33,10 +33,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
           event.username, event.username,
           event.domain,
           event.password, event.port);
-      yield* _registerAccount(account);
+      _registerAccount(account);
 
     } else if (event is Logout) {
-      var account = await settings.getAccount();
+      var account = settings.getAccount();
+      settings.setBool(Settings.wasLoggedIn, false);
       if (account != null) {
         var connection = xmpp.Connection.getInstance(account);
         connection.close();
@@ -44,19 +45,24 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
     } else if (event is ForgetMe) {
       settings.forgetAccount();
+    } else if (event is AccountRegisteredEvent) {
+      settings.setBool(Settings.wasLoggedIn, true);
+      yield AccountRegistered();
+    } else if (event is AccountRegistrationFailedEvent) {
+      yield AccountUnregistered(message: event.message);
     }
   }
 
-  Stream<AccountState> _registerAccount(xmpp.XmppAccount account) async* {
-
+  void _registerAccount(xmpp.XmppAccount account){
+    settings.setAccount(account);
     var connection = xmpp.Connection.getInstance(account);
-    await for (var state in connection.connectionStateStream) {
+    connection.connectionStateStream.listen((state) {
       if (state == xmpp.XmppConnectionState.DoneServiceDiscovery) {
-        yield AccountRegistered();
+        dispatch(AccountRegisteredEvent());
       } else if (state == xmpp.XmppConnectionState.Closed) {
-        yield AccountUnregistered(message: "Authentication failure");
+        dispatch(AccountRegistrationFailedEvent(message : "Authentication failure"));
       }
-    }
+    });
     connection.open();
   }
 }

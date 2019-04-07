@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_chat/const.dart';
 import 'package:simple_chat/service_locator/service_locator.dart';
 import 'package:simple_chat/settings/settings.dart';
+
 //import 'package:simple_chat/src/chat.dart';
 import 'main.dart';
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
@@ -19,6 +20,7 @@ class ChatList extends StatefulWidget {
 }
 
 class ChatListState extends State<ChatList> {
+
   ChatListState({Key key});
 
   List<xmpp.Buddy> _roster = new List<xmpp.Buddy>();
@@ -141,7 +143,8 @@ class ChatListState extends State<ChatList> {
                 minRadius: 25,
                 maxRadius: 25,
                 child: buddy.name != null && buddy.name.isNotEmpty ? Text
-                  (buddy.name[0]) : Text("X", style: TextStyle(color: primaryColor),),
+                  (buddy.name[0]) : Text(
+                  "X", style: TextStyle(color: primaryColor),),
               ),
               borderRadius: BorderRadius.all(Radius.circular(5.0)),
               clipBehavior: Clip.hardEdge,
@@ -257,6 +260,9 @@ class ChatListState extends State<ChatList> {
             // List
             Container(
               child: StreamBuilder(
+                initialData: xmpp.RosterManager.getInstance(
+                    xmpp.Connection.getInstance(
+                        sl.get<Settings>().getAccount())).getRoster(),
                 stream: _rosterStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -296,10 +302,12 @@ class ChatListState extends State<ChatList> {
     );
   }
 
-  Future _initRosterStream() async {
-    xmpp.XmppAccount account = await sl.get<Settings>().getAccount();
+  _initRosterStream() {
+    xmpp.XmppAccount account = sl.get<Settings>().getAccount();
     xmpp.Connection connection = xmpp.Connection.getInstance(account);
-    _rosterStream = xmpp.RosterManager.getInstance(connection).rosterStream;
+    _rosterStream = xmpp.RosterManager
+        .getInstance(connection)
+        .rosterStream;
   }
 }
 

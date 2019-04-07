@@ -27,6 +27,20 @@ class Login extends AccountEvent {
   String toString() => 'Login { username: $username }';
 }
 
+class AccountRegisteredEvent extends AccountEvent {
+  @override
+  String toString() => 'AccountRegisteredEvent';
+}
+
+class AccountRegistrationFailedEvent extends AccountEvent {
+  String message;
+
+  AccountRegistrationFailedEvent({this.message}) : super([message]);
+
+  @override
+  String toString() => 'AccountRegistrationFailedEvent';
+}
+
 class Logout extends AccountEvent {
   @override
   String toString() => 'Logout';
