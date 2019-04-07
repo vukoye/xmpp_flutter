@@ -10,7 +10,6 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final settings = sl.get<Settings>();
 
   @override
-  // TODO: implement initialState
   AccountState get initialState => AccountUninitialized();
 
   @override

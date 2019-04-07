@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +26,10 @@ class _LoginFormState extends State<LoginForm> {
       'Simple Chat',
       textAlign: TextAlign.center,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40.0, color: Colors.lightBlueAccent),
+      style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 40.0,
+          color: Colors.lightBlueAccent),
     );
   }
 
@@ -45,7 +47,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _getPasswordWidget() {
-     return TextFormField(
+    return TextFormField(
       autofocus: false,
       controller: _passwordFilter,
       obscureText: true,
@@ -83,7 +85,6 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-
   Widget _getRememberMeWidget(bool checkValue) {
     return CheckboxListTile(
       value: checkValue,
@@ -108,27 +109,49 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _getAuthFailedText(String text) {
-    return Text(
-        text,
-        textAlign: TextAlign.center,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontWeight: FontWeight.bold),
-    );
+  Widget _getExtendedButton(bool isExtended) {
+    return Padding(
+        padding: EdgeInsets.symmetric(vertical: 16.0),
+        child: FlatButton(
+            onPressed: _extendedPressed,
+            child: Text(isExtended ? 'Basic' : 'Advanced',
+                style: TextStyle(color: Colors.blueAccent))));
   }
 
+  Widget _getAuthFailedText(String text) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
+  }
 
   LoginBloc get _loginBloc => widget.loginBloc;
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<LoginEvent, LoginState>(
       bloc: _loginBloc,
       builder: (
-          BuildContext context,
-          LoginState state,
-          ) {
+        BuildContext context,
+        LoginState state,
+      ) {
+        if (state is LoginInitial) {
+          return _getInitialList();
+        } else if (state is LoginDataLoaded) {
+          _portFilter.text = state.port.toString();
+          _usernameFilter.text = state.username;
+          _passwordFilter.text = state.password;
+          _domainFilter.text = state.domain;
+          return _getListBasedOnState(state.wasExtended, state.rememberMe);
+        } else if (state is CheckedChanged) {
+          return _getListBasedOnState(
+              state.loginExtendValue, state.rememberMeValue);
+        } else {
+          return _getInitialList();
+        }
+
 //        if (state is Login) {
 //          _onWidgetDidBuild(() {
 //            Scaffold.of(context).showSnackBar(
@@ -139,42 +162,57 @@ class _LoginFormState extends State<LoginForm> {
 //            );
 //          });
 //        }
-
-        return ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.only(left: 24.0, right: 24.0),
-          children: <Widget>[
-            _getLogoWidget(),
-            SizedBox(height: 48.0),
-            _getUserNameWidget(false),
-            SizedBox(height: 8.0),
-            _getPasswordWidget(),
-            SizedBox(height: 8.0),
-            _getDomainWidget(),
-            SizedBox(height: 8.0),
-            _getPortWidget(),
-            SizedBox(height: 8.0),
-            _getRememberMeWidget(false),
-            SizedBox(height: 24.0),
-            _getLoginButton(),
-            SizedBox(height: 8.0),
-            //_getAuthFailedText("Auth Failed")
-          ],
-        );
       },
     );
   }
 
+  _getListBasedOnState(bool isExtended, bool rememberMe) {
+    var children = <Widget>[
+      _getLogoWidget(),
+      SizedBox(height: 48.0),
+      _getUserNameWidget(false),
+      SizedBox(height: 8.0),
+      _getPasswordWidget(),
+      SizedBox(height: 8.0),
+    ];
+    if (isExtended) {
+      children.addAll(<Widget>[
+        _getDomainWidget(),
+        SizedBox(height: 8.0),
+        _getPortWidget(),
+        SizedBox(height: 8.0),
+      ]);
+    }
+    children.addAll(<Widget>[
+      _getRememberMeWidget(rememberMe),
+      SizedBox(height: 8.0),
+      _getLoginButton(),
+      SizedBox(height: 8.0),
+      _getExtendedButton(isExtended)
+    ]);
+    return ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.only(left: 24.0, right: 24.0),
+        children: children);
+  }
+
+  _getInitialList() {
+    return _getLogoWidget();
+  }
+
   _onLoginButtonPressed() {
     _loginBloc.dispatch(LoginButtonPressed(
-      username: _usernameFilter.text,
-      password: _passwordFilter.text,
-      domain: _domainFilter.text,
-      port: int.parse(_portFilter.text)
-    ));
+        username: _usernameFilter.text,
+        password: _passwordFilter.text,
+        domain: _domainFilter.text,
+        port: int.parse(_portFilter.text)));
   }
 
   void _rememberMePressed(bool value) {
     _loginBloc.dispatch(RememberMePressed(rememberMeValue: value));
+  }
+
+  void _extendedPressed() {
+    _loginBloc.dispatch(ExtendPressed());
   }
 }

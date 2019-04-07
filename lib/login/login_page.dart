@@ -17,11 +17,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameFilter = new TextEditingController();
-  final TextEditingController _passwordFilter = new TextEditingController();
-  final TextEditingController _domainFilter = new TextEditingController();
-  final TextEditingController _portFilter = new TextEditingController();
-
   AccountBloc _accountBloc;
   LoginBloc _loginBloc ;
 

@@ -28,12 +28,13 @@ class LoginDataLoadedEvent extends LoginEvent {
   String domain;
   int port;
   bool wasExtended;
+  bool rememberMe;
 
   @override
   String toString() => 'LoginDataLoadedEvent';
 
   LoginDataLoadedEvent(
-      {this.username, this.password, this.domain, this.port, this.wasExtended});
+      {this.username, this.password, this.domain, this.port, this.wasExtended, this.rememberMe});
 }
 
 class RememberMePressed extends LoginEvent {
@@ -47,9 +48,8 @@ class RememberMePressed extends LoginEvent {
 }
 
 class ExtendPressed extends LoginEvent {
-  final bool extendValue;
 
-  ExtendPressed({@required this.extendValue}) : super([extendValue]);
+  ExtendPressed() : super();
 
   @override
   String toString() => 'ExtendPressed';

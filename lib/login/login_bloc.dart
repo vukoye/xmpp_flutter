@@ -15,6 +15,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   bool _extended = false;
 
+  bool _rememberMe = false;
+
   LoginBloc({@required this.accountBloc}) {
     _initData();
     accountBloc.state.listen((state) {
@@ -49,21 +51,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       }
       yield LoginLoading();
     } else if (event is ExtendPressed) {
-      _settings.setBool(Settings.wasExtended, event.extendValue);
-      _extended = event.extendValue;
-      yield LoginExtend(loginExtendValue: event.extendValue);
+      _extended = !_extended;
+      _settings.setBool(Settings.wasExtended, _extended);
+      yield CheckedChanged(loginExtendValue: _extended, rememberMeValue: _rememberMe);
     } else if (event is RememberMePressed) {
       _settings.setBool(Settings.rememberMe, event.rememberMeValue);
+      _rememberMe = event.rememberMeValue;
       if (!event.rememberMeValue) {
         accountBloc.dispatch(ForgetMe());
       }
+      yield CheckedChanged(loginExtendValue: _extended, rememberMeValue: _rememberMe);
     } else if (event is LoginDataLoadedEvent) {
       yield LoginDataLoaded(
           username: event.username,
           password: event.password,
           domain: event.domain,
           port: event.port,
-          wasExtended: event.wasExtended);
+          wasExtended: event.wasExtended,
+          rememberMe: _rememberMe
+      );
     }
   }
 
@@ -75,13 +81,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         var domain = _settings.getString(Settings.domain);
         var port = _settings.getInt(Settings.port);
         var wasExtended = _settings.getBool(Settings.wasExtended);
+        _extended = wasExtended;
         if (wasExtended == null) wasExtended = false;
         dispatch(LoginDataLoadedEvent(
             username: username,
             password: password,
             domain: domain,
             port: port,
-            wasExtended: wasExtended));
+            wasExtended: wasExtended,
+          rememberMe: true
+        ));
+      } else {
+        dispatch(LoginDataLoadedEvent(
+            username: "",
+            password: "",
+            domain: "",
+            port: _settings.getDefaultPort(),
+            wasExtended: _settings.getBool(Settings.wasExtended) == true,
+            rememberMe: _settings.getBool(Settings.rememberMe) == true
+        ));
       }
     });
 
