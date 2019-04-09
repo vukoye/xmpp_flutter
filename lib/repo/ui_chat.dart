@@ -22,11 +22,11 @@ class UiChat {
 
   @override
   bool operator ==(other) {
-    return this.jid == other.jid;
+    return this.jid == other.jid && account == account;
   }
 
   @override
-  int get hashCode => jid.hashCode;
+  int get hashCode => jid.hashCode^account.hashCode;
 
   Future<bool> sendMessage(String message) {
     Completer<bool> completer = Completer();

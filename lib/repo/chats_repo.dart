@@ -89,9 +89,8 @@ class ChatsRepoImpl implements ChatsRepo {
   manager, List<xmpp.Chat> chats) {
     chats.forEach((xmppChat) {
       UiChat chat = UiChat.fromXmppChat(xmppChat, account);
-      chat.
+      //nvtd add logic;
     });
-
   }
 }
 
