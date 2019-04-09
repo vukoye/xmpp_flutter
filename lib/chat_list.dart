@@ -262,7 +262,7 @@ class ChatListState extends State<ChatList> {
               child: StreamBuilder(
                 initialData: xmpp.RosterManager.getInstance(
                     xmpp.Connection.getInstance(
-                        sl.get<Settings>().getAccount())).getRoster(),
+                        sl.get<Settings>().getAccountData())).getRoster(),
                 stream: _rosterStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -303,7 +303,7 @@ class ChatListState extends State<ChatList> {
   }
 
   _initRosterStream() {
-    xmpp.XmppAccount account = sl.get<Settings>().getAccount();
+    xmpp.XmppAccount account = sl.get<Settings>().getAccountData();
     xmpp.Connection connection = xmpp.Connection.getInstance(account);
     _rosterStream = xmpp.RosterManager
         .getInstance(connection)

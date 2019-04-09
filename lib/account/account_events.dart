@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import 'package:xmpp_stone/xmpp_stone.dart';
 
 abstract class AccountEvent extends Equatable {
   AccountEvent([List props = const []]) : super(props);
@@ -28,14 +29,18 @@ class Login extends AccountEvent {
 }
 
 class AccountRegisteredEvent extends AccountEvent {
+  XmppAccount account;
+
+  AccountRegisteredEvent({this.account});
   @override
   String toString() => 'AccountRegisteredEvent';
 }
 
 class AccountRegistrationFailedEvent extends AccountEvent {
   String message;
-
-  AccountRegistrationFailedEvent({this.message}) : super([message]);
+  XmppAccount account;
+  AccountRegistrationFailedEvent({this.account, this.message}) : super
+      ([account, message]);
 
   @override
   String toString() => 'AccountRegistrationFailedEvent';

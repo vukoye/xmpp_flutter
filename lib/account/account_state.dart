@@ -1,8 +1,13 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+import 'package:xmpp_stone/xmpp_stone.dart';
 
 abstract class AccountState extends Equatable {}
 
 class AccountRegistered extends AccountState {
+  XmppAccount account;
+
+  AccountRegistered({@required this.account});
   @override
   String toString() {
     return 'AccountRegistered';
@@ -10,6 +15,9 @@ class AccountRegistered extends AccountState {
 }
 
 class AccountRegistering extends AccountState {
+  XmppAccount account;
+
+  AccountRegistering({@required this.account});
   @override
   String toString() {
     return "AccountRegistering";
@@ -17,9 +25,10 @@ class AccountRegistering extends AccountState {
 }
 
 class AccountUnregistered extends AccountState {
+  XmppAccount account;
   final String message;
 
-  AccountUnregistered({this.message});
+  AccountUnregistered({@required this.account, @required this.message});
   @override
   String toString() {
     return "AccountUnregistered";
@@ -27,6 +36,9 @@ class AccountUnregistered extends AccountState {
 }
 
 class AccountUninitialized extends AccountState {
+  XmppAccount account;
+
+  AccountUninitialized({@required this.account});
   @override
   String toString() {
     return "AccountUninitialized";

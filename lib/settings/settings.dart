@@ -15,8 +15,8 @@ abstract class Settings {
   static const String rememberMe = "rememberMe";
   static const String wasLoggedIn = "wasLoggedIn";
 
-  setAccount(xmpp.XmppAccount account);
-  xmpp.XmppAccount getAccount();
+  setAccountData(xmpp.XmppAccount account);
+  xmpp.XmppAccount getAccountData();
 
   setBool(String setting, bool value);
 
@@ -62,7 +62,7 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  xmpp.XmppAccount getAccount()  {
+  xmpp.XmppAccount getAccountData()  {
     if (_account != null) {
       return _account;
     }
@@ -80,7 +80,7 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  setAccount(xmpp.XmppAccount account)  {
+  setAccountData(xmpp.XmppAccount account)  {
     if (account != null) {
       _account = account;
       if (getBool(Settings.rememberMe) == true) {

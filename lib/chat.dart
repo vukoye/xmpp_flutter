@@ -224,7 +224,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Future _initMessageHandler() async {
     xmpp.Connection connection =
-    xmpp.Connection.getInstance(await _settings.getAccount());
+    xmpp.Connection.getInstance(await _settings.getAccountData());
     _messageHandler = xmpp.MessageHandler.getInstance(connection);
     _messageHandler.messagesStream.listen((message) {
       if (message.fromJid.userAtDomain == buddy.jid.userAtDomain &&
