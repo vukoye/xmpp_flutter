@@ -4,6 +4,10 @@ class DbChat {
   String account_id;
   String jid;
   int since;
+
+  DbChat({this.name, this.account_id, this.jid, this.since, this.type,
+      this.status});
+
   int type;
   int status;
 
@@ -21,7 +25,7 @@ class DbChat {
 
   static const CHAT_TYPE_STATUS_ACTIVE = 0;
   static const CHAT_TYPE_STATUS_INACTIVE = 1;
-  static const CHAT_TYPE_STATUS_ARCHIVED = 1;
+  static const CHAT_TYPE_STATUS_ARCHIVED = 2;
 
   static String getTableCreateString() {
     return """
@@ -32,7 +36,7 @@ class DbChat {
             $COLUMN_JID TEXT NOT NULL,
             $COLUMN_SINCE INTEGER NOT NULL,
             $COLUMN_TYPE INTEGER NOT NULL,
-            $COLUMN_STATUS INTEGER NOT NULL,
+            $COLUMN_STATUS INTEGER NOT NULL
           )
     """;
   }

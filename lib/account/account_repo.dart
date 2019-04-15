@@ -58,6 +58,9 @@ class UiAccount {
   final _accountStateSubject = new BehaviorSubject<AccountState>();
   Stream<AccountState> get accountStateStream => _accountStateSubject.stream;
 
+  String get id => "${account.username}@${account.domain}";
+
+
   set accountState(AccountState state) {
     _accountStateSubject.add(state);
   }

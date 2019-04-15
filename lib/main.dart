@@ -14,6 +14,8 @@ import 'package:simple_chat/service_locator/service_locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simple_chat/login/login_page.dart';
 
+import 'main_page/main_page_widget.dart';
+
 void main() {
   setupServiceLocator();
   bloc.BlocSupervisor().delegate = SimpleBlocDelegate();
@@ -59,7 +61,7 @@ class _AppState extends State<MyApp> {
               return LoginPage();
             }
             if (state is AccountRegistered) {
-              return ChatList();
+              return MainPage();
             }
             if (state is AccountUnregistered) {
               return LoginPage();

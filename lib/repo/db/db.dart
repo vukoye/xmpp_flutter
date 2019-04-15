@@ -34,6 +34,7 @@ class DatabaseHelper {
 
   Future<DbChat> insert(DbChat chat) async {
     chat.uuid = await _db.insert(DbChat.TABLE, chat.toMap());
+    return chat;
   }
 
   Future<List<DbChat>> getAllDbChats() async {
@@ -42,17 +43,16 @@ class DatabaseHelper {
     return chats;
   }
 
-
-  Future<List<DbChat>> getAllDbChatsForAccountId(String accountId) async {
-    var result = await _db.rawQuery("SELECT * FROM ${DbChat.TABLE} WHERE "
-        "${DbChat.COLUMN_ACCOUNT_ID} = $accountId");
-    var chats = result.toList().map((item) => DbChat.fromMap(item));
-    return chats;
+  //@formatter:off
+  Future<List<Map<String, dynamic>>> getAllDbChatsForAccountId(String
+  accountId) async {
+    return  _db.rawQuery('SELECT * FROM ${DbChat.TABLE} WHERE ${DbChat.COLUMN_ACCOUNT_ID} = "$accountId"');
   }
+  //@formatter:on
 
   Future<int> delete(DbChat chat) async {
-    return await _db.rawDelete('DELETE FROM Customer WHERE ${DbChat.COLUMN_UUID} = ${chat
-        .uuid}');
+    return await _db.rawDelete('DELETE FROM Customer WHERE "${DbChat.COLUMN_UUID} = ${chat
+        .uuid}"');
   }
 
   close() {

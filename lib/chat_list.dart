@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:simple_chat/const.dart';
+import 'package:simple_chat/roster/roster_repo.dart';
 import 'package:simple_chat/service_locator/service_locator.dart';
 import 'package:simple_chat/settings/settings.dart';
 
@@ -25,7 +26,7 @@ class ChatListState extends State<ChatList> {
 
   List<xmpp.Buddy> _roster = new List<xmpp.Buddy>();
 
-  Stream<List<xmpp.Buddy>> _rosterStream;
+  var _rosterRepo = sl.get<RosterRepo>();
 
   bool isLoading = false;
   List<Choice> choices = const <Choice>[
@@ -36,7 +37,6 @@ class ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
-    _initRosterStream();
   }
 
   Future<bool> onBackPress() {
@@ -133,7 +133,16 @@ class ChatListState extends State<ChatList> {
     }
   }
 
-  Widget buildItem(BuildContext context, xmpp.Buddy buddy) {
+  Widget buildItem(BuildContext context, UiBuddy buddy) {
+    Widget image;
+    if (buddy.vCard?.imageData == null) {
+      image = buddy.name != null && buddy.name.isNotEmpty ? Text
+        (buddy.name[0]) : Text(
+          "X", style: TextStyle(color: primaryColor));
+    } else {
+      image = Image.memory(buddy.vCard.imageData, width: 25, height: 25,);
+    }
+    
     return Container(
       child: FlatButton(
         child: Row(
@@ -142,9 +151,7 @@ class ChatListState extends State<ChatList> {
               child: CircleAvatar(
                 minRadius: 25,
                 maxRadius: 25,
-                child: buddy.name != null && buddy.name.isNotEmpty ? Text
-                  (buddy.name[0]) : Text(
-                  "X", style: TextStyle(color: primaryColor),),
+                child: image,
               ),
               borderRadius: BorderRadius.all(Radius.circular(5.0)),
               clipBehavior: Clip.hardEdge,
@@ -260,10 +267,8 @@ class ChatListState extends State<ChatList> {
             // List
             Container(
               child: StreamBuilder(
-                initialData: xmpp.RosterManager.getInstance(
-                    xmpp.Connection.getInstance(
-                        sl.get<Settings>().getAccountData())).getRoster(),
-                stream: _rosterStream,
+                initialData: List(),
+                stream: _rosterRepo.rosterStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(
@@ -300,14 +305,6 @@ class ChatListState extends State<ChatList> {
         onWillPop: onBackPress,
       ),
     );
-  }
-
-  _initRosterStream() {
-    xmpp.XmppAccount account = sl.get<Settings>().getAccountData();
-    xmpp.Connection connection = xmpp.Connection.getInstance(account);
-    _rosterStream = xmpp.RosterManager
-        .getInstance(connection)
-        .rosterStream;
   }
 }
 
