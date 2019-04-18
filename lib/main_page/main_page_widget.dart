@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_chat/account/account.dart';
 
 import '../main.dart';
 import 'main_page_bloc.dart';
@@ -10,13 +11,27 @@ import 'main_page_content.dart';
 import 'main_page_event.dart';
 
 class MainPage extends StatefulWidget {
-  static String TAG = 'main-page';
+
+  static String TAG = 'main';
+  AccountBloc accountBloc;
+  MainPage(this.accountBloc);
 
   @override
   State<StatefulWidget> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin{
+
+  TabController _controller;
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(vsync: this, length: 2);
+    _controller.addListener(_handleTabSelection);
+  }
+
   List<Choice> choices = const <Choice>[
     const Choice(title: 'Settings', icon: Icons.settings),
     const Choice(title: 'Log out', icon: Icons.exit_to_app),
@@ -25,6 +40,12 @@ class _MainPageState extends State<MainPage> {
   Future<bool> onBackPress() {
     openDialog();
     return Future.value(false);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<Null> openDialog() async {
@@ -66,7 +87,7 @@ class _MainPageState extends State<MainPage> {
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, 0);
+                  widget.accountBloc.dispatch(Logout());
                 },
                 child: Row(
                   children: <Widget>[
@@ -121,21 +142,15 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    print('build defaultTabController');
+    return Scaffold(
         appBar: AppBar(
           bottom: TabBar(
+            controller: _controller,
             tabs: [
-              GestureDetector(
-                  onTap: () =>
-                      _mainPageBloc.dispatch(MainPageRosterTabActive()),
-                  child: Tab(
-                    text: "Roster",)),
-              GestureDetector(
-                  onTap: () =>
-                      _mainPageBloc.dispatch(MainPageChatListTabActive()),
-                  child: Tab(text: "Chat")),
+              Tab(
+                    text: "Roster",),
+              Tab(text: "Chat"),
             ],
           ),
           title: Text(
@@ -175,7 +190,9 @@ class _MainPageState extends State<MainPage> {
           child: Stack(
             children: <Widget>[
               // List
-              TabBarView(children: [
+              TabBarView(
+                  controller: _controller,
+                  children: [
                 RosterPage(mainPageBloc: _mainPageBloc),
                 ChatListPage(mainPageBloc: _mainPageBloc),
               ]),
@@ -196,7 +213,6 @@ class _MainPageState extends State<MainPage> {
           ),
           onWillPop: onBackPress,
         ),
-      ),
     );
   }
 
@@ -212,6 +228,17 @@ class _MainPageState extends State<MainPage> {
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => MyApp()),
         (Route<dynamic> route) => false);
+  }
+
+  void _handleTabSelection() {
+    setState(() {
+      _currentIndex = _controller.index;
+      if (_currentIndex == 1) {
+        _mainPageBloc.dispatch(MainPageChatListTabActive());
+      } else {
+        _mainPageBloc.dispatch(MainPageRosterTabActive());
+      }
+    });
   }
 }
 

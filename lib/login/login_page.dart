@@ -10,22 +10,22 @@ import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  static String tag = 'login-page';
+  static String tag = 'login';
+  AccountBloc accountBloc;
+  LoginPage(this.accountBloc);
 
   @override
   _LoginPageState createState() => new _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  AccountBloc _accountBloc;
   LoginBloc _loginBloc ;
 
   @override
   void initState() {
-    _accountBloc = BlocProvider.of<AccountBloc>(context);
     print("init State");
     _loginBloc = LoginBloc(
-      accountBloc: _accountBloc,
+      accountBloc: widget.accountBloc,
     );
     super.initState();
   }

@@ -30,6 +30,7 @@ class AccountRepoImpl implements AccountRepo{
     return uiAccount;
   }
 
+
   close() {
     _accountSubject.close();
   }
@@ -50,7 +51,7 @@ abstract class AccountRepo {
 
   UiAccount register(XmppAccount account);
 
-  void unregister(XmppAccount account) {}
+  void unregister(XmppAccount account);
 }
 
 class UiAccount {

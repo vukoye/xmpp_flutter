@@ -45,7 +45,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       if (account != null) {
         accountRepo.unregister(account);
       }
-
+      yield AccountUnregistered(account: account, message: "");
     } else if (event is ForgetMe) {
       settings.forgetAccount();
     } else if (event is AccountRegisteredEvent) {

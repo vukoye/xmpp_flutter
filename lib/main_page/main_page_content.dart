@@ -54,7 +54,7 @@ class _RosterPageState extends State<RosterPage> {
       builder: (BuildContext context, MainPageState state) {
         if (state is MainPageRosterList) {
           return ListView.builder(
-              padding: EdgeInsets.all(10.0),
+              padding: EdgeInsets.all(1.0),
               itemBuilder: (context, index) =>
                   buildItem(context, state.activeList[index]),
               itemCount: state.activeList.length);
@@ -68,73 +68,69 @@ class _RosterPageState extends State<RosterPage> {
   Widget buildItem(BuildContext context, UiBuddy buddy) {
     Widget image;
     if (buddy.vCard?.imageData == null) {
-      image = buddy.name != null && buddy.name.isNotEmpty
+      image = CircleAvatar(
+          radius: 25,
+          child: buddy.name != null && buddy.name.isNotEmpty
           ? Text(buddy.name[0])
-          : Text("X", style: TextStyle(color: Colors.black87));
+          : Text("X", style: TextStyle(color: Colors.black87)));
     } else {
-      image = Image.memory(
+      image = CircleAvatar(
+        radius: 25,
+          backgroundImage: MemoryImage(
         buddy.vCard.imageData,
-        width: 25,
-        height: 25,
-      );
+      ));
+//      image = new Container(
+//        height: 30.0,
+//        width: 30.0,
+//        decoration: new BoxDecoration(
+//          color: const Color(0xff7c94b6),
+//          borderRadius: BorderRadius.all(const Radius.circular(50.0)),
+//          border: Border.all(color: const Color(0xFF28324E)),
+//          // image: new Image.asset(_image.)
+//        ),
+//        child: Image.memory(
+//        buddy.vCard.imageData,
+//      ),
+//      );
     }
 
     return Container(
-      child: FlatButton(
-        child: Row(
-          children: <Widget>[
-            Material(
-              child: CircleAvatar(
-                minRadius: 25,
-                maxRadius: 25,
-                child: image,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              clipBehavior: Clip.hardEdge,
-            ),
-            Flexible(
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        'Name: ${buddy.name ?? 'No Info'}',
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left:8.0),
+            child: image,
+          ),
+          Flexible(
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      '${buddy.name ?? 'No Info'}',
+                      style: TextStyle(fontWeight: FontWeight.bold, color:
+                      Colors
+                          .black87),
                     ),
-                    Container(
-                      child: Text(
-                        'Jid: ${buddy.jid.fullJid}',
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
-                    )
-                  ],
-                ),
-                margin: EdgeInsets.only(left: 20.0),
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 4.0),
+                  ),
+                  Container(
+                    child: Text(
+                      '${buddy.jid.fullJid}',
+                      style: TextStyle(color: Colors.black87),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                  )
+                ],
               ),
+              margin: EdgeInsets.only(left: 8.0),
             ),
-          ],
-        ),
-        onPressed: () {
-          //todo handle press
-//          Navigator.push(
-//              context,
-//              MaterialPageRoute(
-//                  builder: (context) =>
-//                      Chat(
-//                        buddy : buddy
-//                      )));
-        },
-        color: Colors.grey,
-        padding: EdgeInsets.fromLTRB(25.0, 10.0, 25.0, 10.0),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          ),
+        ],
       ),
-      margin: EdgeInsets.only(bottom: 10.0, left: 5.0, right: 5.0),
+      margin: EdgeInsets.only(bottom: 8.0, left: 4.0, right: 4.0),
     );
   }
 }
@@ -157,6 +153,7 @@ class ChatListPage extends StatefulWidget {
 class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
+    print('build _ChatListPageState');
     // TODO: implement build
     return BlocBuilder<MainPageEvent, MainPageState>(
       bloc: widget.mainPageBloc,

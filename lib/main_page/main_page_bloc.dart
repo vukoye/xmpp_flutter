@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:simple_chat/main_page/main_page_event.dart';
 import 'package:simple_chat/main_page/main_page_state.dart';
 import 'package:simple_chat/repo/chats_repo.dart';
@@ -31,18 +32,24 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     if (event is MainPageChatListTabActive) {
       yield MainPageChatList(activeList: _activeChats);
     } else if (event is MainPageRosterTabActive) {
+      print("dispatch Roster2 ${_activeRoster.length}");
       yield MainPageRosterList(activeList: _activeRoster);
     }
   }
 
   void _initStreams() {
-    _rosterRepo.rosterStream.listen((roster) {
+    Observable(_rosterRepo.rosterStream).debounce(Duration(milliseconds: 1000))
+        .listen(
+            (roster) {
       _activeRoster = roster;
       if (_activeTab == MainPageTab.ROSTER) {
         dispatch(MainPageRosterTabActive());
+        print("dispatch Roster");
       }
     });
-    _chatListRepo.chatsStream.listen((chats) {
+
+    Observable(_chatListRepo.chatsStream).debounce(Duration(milliseconds: 1000))
+        .listen((chats) {
       _activeChats = chats;
       if(_activeTab == MainPageTab.CHAT_LIST) {
         dispatch(MainPageChatListTabActive());

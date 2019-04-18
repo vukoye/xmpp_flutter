@@ -7,26 +7,30 @@ abstract class MainPageState extends Equatable {
   MainPageState([List props = const []]) : super(props);
 }
 
+@immutable
 class MainPageChatList extends MainPageState {
 
-  String searchString = "";
-  int position = 0;
-  List<UiChat> activeList = List();
+  final String searchString;
+  final int position;
+  final List<UiChat> activeList;
 
-  MainPageChatList({this.searchString, this.position, this.activeList});
+  MainPageChatList({this.searchString, this.position, @required this
+      .activeList}) : super([searchString, position, activeList]);
 
-  @override
-  String toString() => 'MainPageChatList';
+      @override
+      String toString() => 'MainPageChatList';
 }
 
 class MainPageRosterList extends MainPageState {
 
-  String searchString = "";
-  int position =0;
-  List<UiBuddy> activeList = List();
+  final String searchString;
+  final int position;
+  final List<UiBuddy> activeList;
 
-  MainPageRosterList({this.searchString, this.position,  this.activeList});
+  MainPageRosterList(
+      {this.searchString, this.position, @required this.activeList})
+      : super([searchString, position, activeList]);
 
-  @override
-  String toString() => 'MainPageRosterList';
+      @override
+      String toString() => 'MainPageRosterList';
 }
