@@ -72,12 +72,16 @@ class ChatsRepoImpl implements ChatsRepo {
         _accounts[acc] = sub;
       }
     });
+    List<UiAccount> toRemove = List<UiAccount>();
     _accounts.keys.forEach((oldAcc) {
       if (!accounts.contains(oldAcc)) {
-        _accounts[oldAcc].cancel();
-        _accounts.remove(oldAcc);
-        _removeChatManager(oldAcc);
+        toRemove.add(oldAcc);
       }
+    });
+    toRemove.forEach((acc) {
+      _accounts[acc].cancel();
+      _accounts.remove(acc);
+      _removeChatManager(acc);
     });
   }
 

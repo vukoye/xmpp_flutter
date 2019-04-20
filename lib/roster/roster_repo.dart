@@ -66,12 +66,16 @@ class RosterRepoImpl implements RosterRepo {
         _accounts[acc] = sub;
       }
     });
+    List<UiAccount> toRemove = List<UiAccount>();
     _accounts.keys.forEach((oldAcc) {
       if (!accounts.contains(oldAcc)) {
-        _accounts[oldAcc].cancel();
-        _accounts.remove(oldAcc);
-        _removeManagers(oldAcc);
+        toRemove.add(oldAcc);
       }
+    });
+    toRemove.forEach((acc) {
+      _accounts[acc].cancel();
+      _accounts.remove(acc);
+      _removeManagers(acc);
     });
   }
 
