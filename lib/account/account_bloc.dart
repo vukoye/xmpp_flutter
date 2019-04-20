@@ -17,6 +17,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   @override
   Stream<AccountState> mapEventToState(AccountEvent event) async* {
+    print("account bloc event: ${event.toString()}");
     if (event is AppStarted) {
       await settings.isInitialized();
       bool shouldStartRegistration =

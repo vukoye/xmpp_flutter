@@ -87,7 +87,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  widget.accountBloc.dispatch(Logout());
+                  Navigator.pop(context, 0);
                 },
                 child: Row(
                   children: <Widget>[
@@ -225,9 +225,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   }
 
   Future<Null> handleSignOut() async {
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => MyApp()),
-        (Route<dynamic> route) => false);
+    widget.accountBloc.dispatch(Logout());
+//    Navigator.of(context).pushAndRemoveUntil(
+//        MaterialPageRoute(builder: (context) => MyApp()),
+//        (Route<dynamic> route) => false);
   }
 
   void _handleTabSelection() {
