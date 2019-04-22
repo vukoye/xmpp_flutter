@@ -44,7 +44,7 @@ class LoginExtendedChanged extends LoginState {
       : super([loginExtendValue]);
 
   @override
-  String toString() => 'LoginLoading';
+  String toString() => 'LoginExtendedChanged';
 }
 
 class RememberMeChanged extends LoginState {
@@ -55,7 +55,7 @@ class RememberMeChanged extends LoginState {
       : super([rememberMeValue]);
 
   @override
-  String toString() => 'LoginLoading';
+  String toString() => 'RememberMeChanged';
 }
 
 class LoginFailureState extends LoginState {

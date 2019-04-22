@@ -62,7 +62,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           password: password,
           domain: domain,
           port: port));
-      yield LoginLoading();
+      yield LoginInitial();
     } else if (event is ExtendPressed) {
       _extended = !_extended;
       _settings.setBool(Settings.wasExtended, _extended);
@@ -74,6 +74,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         accountBloc.dispatch(ForgetMe());
       }
       yield RememberMeChanged(rememberMeValue: _rememberMe);
+      //yield LoginInitial();
     } else if (event is LoginDataLoadedEvent) {
       _rememberMe = event.rememberMe;
       yield LoginDataLoaded(
@@ -84,6 +85,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           wasExtended: event.wasExtended,
           rememberMe: _rememberMe
       );
+    } else if (event is LoginDataShownEvent) {
+      yield LoginInitial();
     }
   }
 

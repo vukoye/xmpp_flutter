@@ -144,7 +144,9 @@ class _LoginFormState extends State<LoginForm> {
         LoginState state,
       ) {
         if (state is LoginInitial) {
-          return _getInitialList();
+          return _getListBasedOnState();
+        } else if (state is LoginLoading) {
+          return _getLoadingList();
         } else if (state is LoginDataLoaded) {
           _portFilter.text = state.port.toString();
           _usernameFilter.text = state.username;
@@ -153,10 +155,10 @@ class _LoginFormState extends State<LoginForm> {
           _authMessage = null;
           _rememberMe = state.rememberMe;
           _isExtended = state.wasExtended;
+          _loginBloc.dispatch(LoginDataShownEvent());
           return _getListBasedOnState();
         } else if (state is RememberMeChanged) {
           _rememberMe = state.rememberMeValue;
-          _getListBasedOnState();
           return _getListBasedOnState();
         } else if (state is LoginExtendedChanged) {
           _isExtended = state.loginExtendValue;
@@ -166,7 +168,7 @@ class _LoginFormState extends State<LoginForm> {
           return _getListBasedOnState();
         }
         else {
-          return _getInitialList();
+          return _getListBasedOnState();
         }
       },
     );
@@ -205,7 +207,7 @@ class _LoginFormState extends State<LoginForm> {
         children: children);
   }
 
-  _getInitialList() {
+  _getLoadingList() {
     return ListView(
       shrinkWrap: true,
         padding:  EdgeInsets.only(left: 24.0, right: 24.0),

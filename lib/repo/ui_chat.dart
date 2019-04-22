@@ -9,7 +9,7 @@ import 'package:xmpp_stone/xmpp_stone.dart';
 //call unsubscribe
 class UiChat {
   int dbId;
-  String name;
+  String _name = "";
   UiAccount account;
   Jid jid;
   UiChatStatus status = UiChatStatus.ACTIVE;
@@ -53,13 +53,13 @@ class UiChat {
     jid = _xmppChat.jid;
     _subscribeToMessageStream();
     created = DateTime.now();
-    name = jid.fullJid;
+    _name = jid.fullJid;
   }
 
   UiChat.fromDbChat(DbChat dbChat, this.account) {
     this.jid = Jid.fromFullJid(dbChat.jid);
     this.dbId = dbChat.uuid;
-    this.name = dbChat.name;
+    this._name = dbChat.name;
     this.status = _statusFromInt(dbChat.status);
     this.type = _typeFromInt(dbChat.type);
   }
@@ -88,12 +88,16 @@ class UiChat {
     });
   }
 
+  String get name => _name != null ? _name : jid.userAtDomain;
+
   DbChat get getDbChat {
     return DbChat(
         name: name,
         account_id: account.id,
         jid: jid.fullJid,
-        since: created.millisecondsSinceEpoch);
+        since: created.millisecondsSinceEpoch,
+        type: type.index,
+        status: status.index);
   }
 
 

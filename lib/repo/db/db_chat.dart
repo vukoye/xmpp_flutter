@@ -53,7 +53,7 @@ class DbChat {
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      TABLE: name,
+      COLUMN_NAME: name,
       COLUMN_ACCOUNT_ID: account_id,
       COLUMN_JID: jid,
       COLUMN_SINCE: since,

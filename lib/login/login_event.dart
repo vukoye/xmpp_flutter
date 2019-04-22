@@ -22,6 +22,11 @@ class LoginButtonPressed extends LoginEvent {
   String toString() => 'LoginButtonPressed';
 }
 
+class LoginDataShownEvent extends LoginEvent {
+  @override
+  String toString() => 'LoginDataShownEvent';
+}
+
 class LoginDataLoadedEvent extends LoginEvent {
   String username;
   String password;
