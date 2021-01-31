@@ -166,8 +166,7 @@ class _LoginFormState extends State<LoginForm> {
         } else if (state is LoginFailureState) {
           _authMessage = state.error;
           return _getListBasedOnState();
-        }
-        else {
+        } else {
           return _getListBasedOnState();
         }
       },
@@ -210,7 +209,7 @@ class _LoginFormState extends State<LoginForm> {
   _getLoadingList() {
     return ListView(
       shrinkWrap: true,
-        padding:  EdgeInsets.only(left: 24.0, right: 24.0),
+      padding: EdgeInsets.only(left: 24.0, right: 24.0),
       children: <Widget>[
         _getLogoWidget(),
         CircularProgressIndicator(
@@ -226,6 +225,8 @@ class _LoginFormState extends State<LoginForm> {
         password: _passwordFilter.text,
         domain: _domainFilter.text,
         port: int.parse(_portFilter.text)));
+
+    print("login pressed");
   }
 
   void _rememberMePressed(bool value) {
