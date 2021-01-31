@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xmpp_stone/xmpp_stone.dart' as xmpp;
 
 abstract class Settings {
-
   static const String shouldSaveAccount = "shouldSaveAccount";
   static const String isAccountSaved = "isAccountSaved";
   static const String wasExtended = "wasShort";
@@ -15,8 +14,8 @@ abstract class Settings {
   static const String rememberMe = "rememberMe";
   static const String wasLoggedIn = "wasLoggedIn";
 
-  setAccountData(xmpp.XmppAccount account);
-  xmpp.XmppAccount getAccountData();
+  setAccountData(xmpp.XmppAccountSettings account);
+  xmpp.XmppAccountSettings getAccountData();
 
   setBool(String setting, bool value);
 
@@ -42,10 +41,9 @@ abstract class Settings {
 }
 
 class SettingsImpl implements Settings {
-
   Completer<bool> _initialized = Completer();
 
-  xmpp.XmppAccount _account;
+  xmpp.XmppAccountSettings _account;
   var _prefs;
 
   SettingsImpl() {
@@ -62,7 +60,7 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  xmpp.XmppAccount getAccountData()  {
+  xmpp.XmppAccountSettings getAccountData() {
     if (_account != null) {
       return _account;
     }
@@ -72,7 +70,8 @@ class SettingsImpl implements Settings {
       String password = _prefs.getString(Settings.password);
       String domain = _prefs.getString(Settings.domain);
       int port = _prefs.getInt(Settings.port);
-      _account = xmpp.XmppAccount(username, username, domain, password, port);
+      _account =
+          xmpp.XmppAccountSettings(username, username, domain, password, port);
       return _account;
     } else {
       return null;
@@ -80,7 +79,7 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  setAccountData(xmpp.XmppAccount account)  {
+  setAccountData(xmpp.XmppAccountSettings account) {
     if (account != null) {
       _account = account;
       if (getBool(Settings.rememberMe) == true) {
@@ -101,7 +100,7 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  setBool(String setting, bool value)  {
+  setBool(String setting, bool value) {
     _prefs.setBool(setting, value);
   }
 
@@ -111,7 +110,7 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  void forgetAccount()  {
+  void forgetAccount() {
     remove(Settings.isAccountSaved);
     remove(Settings.username);
     remove(Settings.password);
@@ -121,23 +120,22 @@ class SettingsImpl implements Settings {
   }
 
   @override
-  int getInt(String setting)  {
+  int getInt(String setting) {
     return _prefs.getInt(setting);
   }
 
   @override
-  String getString(String setting)  {
+  String getString(String setting) {
     return _prefs.getString(setting);
   }
 
   @override
-  setInt(String setting, int value)  {
+  setInt(String setting, int value) {
     _prefs.setInt(setting, value);
   }
 
-
   @override
-  setString(String setting, String value)  {
+  setString(String setting, String value) {
     _prefs.setString(setting, value);
   }
 
@@ -150,6 +148,4 @@ class SettingsImpl implements Settings {
   Future isInitialized() {
     return _initialized.future;
   }
-
 }
-

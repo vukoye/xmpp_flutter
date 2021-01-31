@@ -29,7 +29,7 @@ class Login extends AccountEvent {
 }
 
 class AccountRegisteredEvent extends AccountEvent {
-  XmppAccount account;
+  XmppAccountSettings account;
 
   AccountRegisteredEvent({this.account});
   @override
@@ -38,9 +38,9 @@ class AccountRegisteredEvent extends AccountEvent {
 
 class AccountRegistrationFailedEvent extends AccountEvent {
   String message;
-  XmppAccount account;
-  AccountRegistrationFailedEvent({this.account, this.message}) : super
-      ([account, message]);
+  XmppAccountSettings account;
+  AccountRegistrationFailedEvent({this.account, this.message})
+      : super([account, message]);
 
   @override
   String toString() => 'AccountRegistrationFailedEvent';

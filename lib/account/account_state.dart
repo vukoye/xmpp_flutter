@@ -5,7 +5,7 @@ import 'package:xmpp_stone/xmpp_stone.dart';
 abstract class AccountState extends Equatable {}
 
 class AccountRegistered extends AccountState {
-  XmppAccount account;
+  XmppAccountSettings account;
 
   AccountRegistered({@required this.account});
   @override
@@ -15,7 +15,7 @@ class AccountRegistered extends AccountState {
 }
 
 class AccountRegistering extends AccountState {
-  XmppAccount account;
+  XmppAccountSettings account;
 
   AccountRegistering({@required this.account});
   @override
@@ -25,7 +25,7 @@ class AccountRegistering extends AccountState {
 }
 
 class AccountUnregistered extends AccountState {
-  XmppAccount account;
+  XmppAccountSettings account;
   final String message;
 
   AccountUnregistered({@required this.account, @required this.message});
@@ -36,7 +36,7 @@ class AccountUnregistered extends AccountState {
 }
 
 class AccountUninitialized extends AccountState {
-  XmppAccount account;
+  XmppAccountSettings account;
 
   AccountUninitialized({@required this.account});
   @override
